@@ -6,7 +6,7 @@ int main() {
 	Date a;
 	std::cout << "a: " << a << std::endl;
 
-	Date b("1996.06.26");
+	Date b("2018.02.28");
 	std::cout << "b: " << b << std::endl;
 
 	Date c;
