@@ -7,10 +7,15 @@
 
 Date::Date() : _day(1), _month(1), _year(1970) {}
 
-Date::Date(int days) {
+Date::Date(int days) : _day(1), _month(1), _year(1) {
+
+	if (days <= 0) {
+		std::cout << "No-no-no! I don't deal with B.C. era" << std::endl;
+		return;
+	}
 
 	const int daysIn400Years = (400 * 365) + 97;
-	_year = (days / daysIn400Years) * 400;
+	_year += (days / daysIn400Years) * 400;
 	days = days % daysIn400Years;
 
 	while (days >= 365) {
@@ -19,11 +24,16 @@ Date::Date(int days) {
 		days -= 365;
 	}
 
-	_month = 0;
-	while (days > monthDays[_month + 1])
-		_month++;
-	_day = days - monthDays[_month];
+	if (leapYear(_year))
+		days++;
 
+	int j = 0;
+	while (days > monthDays[_month] + j) {
+		_month++;
+		j = (leapYear(_year) && _month > 1) ? 1 : 0;
+	}
+	j = (leapYear(_year) && _month > 2) ? 1 : 0;
+	_day = days - monthDays[_month - 1] - j;
 }
 
 Date::Date(std::string date) : _day(1), _month(1), _year(1970) {
@@ -46,7 +56,7 @@ Date::setDate(std::string date) {
 	else
 		return false;
 		
-	if (month < 1 || month > 12 || day < 1 || day > 31)
+	if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31)
 		return false;
 	if (month == 2 && leapYear(year) && day > 29)
 		return false;
@@ -102,7 +112,7 @@ countDays(Date const & d) {
 
 	int baseYear = (d.getMonth() <= 2) ? (d.getYear() - 1) : d.getYear();
 	int numOfLeapYears = baseYear / 4 - baseYear / 100 + baseYear / 400;
-	int days = d.getYear() * 365 + monthDays[d.getMonth() - 1] + d.getDay() + numOfLeapYears;
+	int days = (d.getYear() - 1) * 365 + monthDays[d.getMonth() - 1] + d.getDay() + numOfLeapYears;
 	return days;
 }
 
@@ -114,4 +124,16 @@ operator-(Date const & d1, Date const & d2) {
 	if (date1 > date2)
 		return Date(date1 - date2);
 	return Date(date2 - date1);
+}
+
+Date
+operator+(Date const & date, int days) {
+
+	return Date(countDays(date) + days);
+}
+
+Date
+operator-(Date const & date, int days) {
+
+	return Date(countDays(date) - days);
 }

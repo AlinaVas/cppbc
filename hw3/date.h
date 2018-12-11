@@ -11,7 +11,7 @@ class Date {
 	int _year;
 
 	Date(int);
-	int	countDays(Date const & d);
+	int	countDays(Date const &);
 
 	public:
 
@@ -25,9 +25,11 @@ class Date {
 
 		bool		setDate(std::string);
 
-		friend Date	operator-(Date const & d1, Date const & d2);
+		friend Date	operator-(Date const &, Date const &);
+		friend Date	operator+(Date const &, int);
+		friend Date	operator-(Date const &, int);
 };
 
-std::ostream	&operator<<(std::ostream &out, Date const & rhs);
+std::ostream	&operator<<(std::ostream &, Date const &);
 
-std::istream	&operator>>(std::istream &in, Date & rhs);
+std::istream	&operator>>(std::istream &, Date &);
