@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/gl/hw4/String.cpp
+String.h
+/gl/hw4/String.h
+cstring
+-
+
+/gl/hw4/String.h
+cstddef
+-
+iostream
+-
+
+/gl/hw4/main.cpp
+String.h
+/gl/hw4/String.h
+
