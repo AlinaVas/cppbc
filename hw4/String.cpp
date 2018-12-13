@@ -8,7 +8,7 @@ String::String() : str(new char[1]), size(0) {}
 
 String::String(const String &str) : str(new char[str.length() + 1]()), size(str.length()) {
 
-	this->str = (size) ? strcpy(this->str, str.c_str()) : 0;
+	this->str = strcpy(this->str, str.c_str());
 }
 
 String::String(const char *str) : size(strlen(str)) {
@@ -24,6 +24,8 @@ String::String(size_t n, char c) : str(new char[n + 1]), size(n) {
 	str[n] = '\0';
 }
 
+String::~String() { delete[] str; }
+
 size_t
 String::length() const { return size; }
 
@@ -32,9 +34,6 @@ String::c_str() const { return str; }
 
 String&
 String::append(const String &str) {
-
-	if(!str.c_str())
-		return *this;
 
 	size += str.length();
 	
@@ -50,9 +49,6 @@ String::append(const String &str) {
 String&
 String::append(const char *str) {
 
-	if(!str)
-		return *this;
-
 	size += strlen(str);
 	char *newStr = new char[size + 1];
 	strcpy(newStr, this->str);
@@ -66,7 +62,13 @@ String::append(const char *str) {
 int
 String::compare(const String &str) const {
 
-	return strcmp(this->c_str(), str.c_str());
+	return strcmp(this->str, str.c_str());
+}
+
+int
+String::compare(const char *str) const {
+
+	return strcmp(this->str, str);
 }
 
 void
@@ -87,8 +89,63 @@ String::resize(size_t n, char c /*= '\0'*/) {
 	size = n;
 }
 
+void
+String::clear() {
+
+	delete[] str;
+	str = new char[1];
+	size = 0;
+}
+
+void
+String::swap(String &str) {
+
+	char *tmpStr = this->str;
+	this->str = str.str;
+	str.str = tmpStr;
+
+	size_t tmpSize = this->size;
+	this->size = str.size;
+	str.size = tmpSize;
+}
+
+int
+String::substr(const String &s, size_t n, size_t len) const {
+
+	if (n >= s.size || !len)
+		return -1;
+
+	char *subStr = new char[len + 1];
+	strncpy(subStr, &s.str[n], len);
+	subStr[len] = '\0';
+	char *pos = strstr(str, subStr);
+	delete[] subStr;
+	if (!pos)
+		return -1;
+	return pos - str;
+}
+
+int
+String::substr(const char *s, size_t n, size_t len) const {
+
+	if (!s || n >= strlen(s) || !len)
+		return -1;
+
+	char *subStr = new char[len + 1];
+	strncpy(subStr, &s[n], len);
+	subStr[len] = '\0';
+	char *pos = strstr(str, subStr);
+	delete[] subStr;
+	if (!pos)
+		return -1;
+	return pos - str;
+}
+
+
 ostream&
 operator<<(ostream &out, String const &rhs) {
 
 	return out << rhs.c_str();
 }
+
+
