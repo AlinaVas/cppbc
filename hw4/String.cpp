@@ -1,12 +1,12 @@
 #include "String.h"
-// #include <iostream>
 #include <cstring>
+#include <stdexcept>
 
 using namespace std;
 
 String::String() : str(new char[1]), size(0) {}
 
-String::String(const String &str) : str(new char[str.length() + 1]()), size(str.length()) {
+String::String(const String &str) : str(new char[str.length() + 1]), size(str.length()) {
 
 	this->str = strcpy(this->str, str.c_str());
 }
@@ -94,6 +94,7 @@ String::clear() {
 
 	delete[] str;
 	str = new char[1];
+	*str = '\0';
 	size = 0;
 }
 
@@ -112,8 +113,10 @@ String::swap(String &str) {
 int
 String::substr(const String &s, size_t n, size_t len) const {
 
-	if (n >= s.size || !len)
+	if (!len)
 		return -1;
+	if (n > s.size)
+		throw std::out_of_range("n value is greater than the size of a String");
 
 	char *subStr = new char[len + 1];
 	strncpy(subStr, &s.str[n], len);
@@ -128,8 +131,10 @@ String::substr(const String &s, size_t n, size_t len) const {
 int
 String::substr(const char *s, size_t n, size_t len) const {
 
-	if (!s || n >= strlen(s) || !len)
+	if (!s || !len)
 		return -1;
+	if (n > strlen(s))
+		throw std::out_of_range("n value is greater than the size of a String");
 
 	char *subStr = new char[len + 1];
 	strncpy(subStr, &s[n], len);
@@ -141,11 +146,166 @@ String::substr(const char *s, size_t n, size_t len) const {
 	return pos - str;
 }
 
+String&
+String::insert(size_t pos, const String &str) {
+
+	if (pos > this->size)
+		throw std::out_of_range("pos value is greater than the size of a String");
+	char *newStr = new char[this->size + str.size + 1];
+	strncpy(newStr, this->str, pos);
+	strcat(newStr, str.str);
+	strcpy(&newStr[pos + str.size], &this->str[pos]);
+
+	delete[] this->str;
+	this->str = newStr;
+	this->size += str.size;
+	return *this;
+}
+
+String&
+String::insert(size_t pos, const char *str) {
+
+	if (pos > this->size)
+		throw std::out_of_range("pos value is greater than the size of a String");
+	char *newStr = new char[this->size + strlen(str) + 1];
+	strncpy(newStr, this->str, pos);
+	strcat(newStr, str);
+	strcpy(&newStr[pos + strlen(str)], &this->str[pos]);
+
+	delete[] this->str;
+	this->str = newStr;
+	this->size += strlen(str);
+	return *this;
+}
+
+String&
+String::insert(size_t pos, const String &str, size_t subpos, size_t sublen) {
+
+	if (pos > this->size)
+		throw std::out_of_range("pos value is greater than the size of a String");
+	if (subpos > str.size)
+		throw std::out_of_range("subpos value is greater than the size of str");
+
+	char *subStr = new char[sublen + 1];
+	strncpy(subStr, &str.str[subpos], sublen);
+	subStr[sublen] = '\0';
+	
+	char *newStr = new char[this->size + sublen + 1];
+	strncpy(newStr, this->str, pos);
+	strcat(newStr, subStr);
+	strcpy(&newStr[pos + sublen], &this->str[pos]);
+
+	delete[] subStr;
+	delete[] this->str;
+	this->str = newStr;
+	this->size += sublen;
+	return *this;
+}
+
+String&
+String::insert(size_t pos, const char *str, size_t subpos, size_t sublen) {
+
+	if (pos > this->size)
+		throw std::out_of_range("pos value is greater than the size of a String");
+	if (subpos > strlen(str))
+		throw std::out_of_range("subpos value is greater than the size of str");
+
+	char *subStr = new char[sublen + 1];
+	strncpy(subStr, &str[subpos], sublen);
+	subStr[sublen] = '\0';
+	
+	char *newStr = new char[this->size + sublen + 1];
+	strncpy(newStr, this->str, pos);
+	strcat(newStr, subStr);
+	strcpy(&newStr[pos + sublen], &this->str[pos]);
+
+	delete[] subStr;
+	delete[] this->str;
+	this->str = newStr;
+	this->size += sublen;
+	return *this;
+}
+
+String&
+String::operator=(const String &rhs) {
+
+	if (&rhs != this) {
+
+		size = rhs.size;
+
+		delete[] str;
+		str = new char[size + 1];
+		strcpy(str, rhs.str);
+	}
+	return *this;
+}
+
+String
+String::operator+(const String &rhs) const {
+
+	String s(*this);
+	s.append(rhs);
+	return s;
+}
+
+String
+String::operator+(const char *rhs) const {
+
+	String s(*this);
+	s.append(rhs);
+	return s;
+}
+
+String&
+String::operator+=(const String &rhs) {
+
+	return append(rhs);
+}
+
+String&
+String::operator+=(const char *rhs) {
+
+	return append(rhs);
+}
+
+bool
+String::operator==(const String &rhs) const {
+
+	if (!strcmp(str, rhs.str) && (size == rhs.size))
+		return true;
+	return false;
+}
+
+bool
+String::operator!=(const String &rhs) const {
+
+	if (!strcmp(str, rhs.str) && (size == rhs.size))
+		return false;
+	return true;
+}
+
+String
+operator+(const char *lhs, const String &rhs) {
+
+	String s(lhs);
+	s += rhs;
+	return s;
+}
 
 ostream&
-operator<<(ostream &out, String const &rhs) {
+operator<<(ostream &out, const String &rhs) {
 
 	return out << rhs.c_str();
 }
 
+istream&
+operator>>(istream &in, String &rhs) {
 
+	rhs.clear(); 
+
+	string buf;
+	in >> buf;
+	rhs.append(buf.c_str());
+
+	return in;
+}

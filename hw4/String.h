@@ -18,6 +18,8 @@ public:
 	String(size_t n, char c);
 
 	~String();
+
+	
 	
 	size_t	length() const;
 	char	*c_str() const;
@@ -28,11 +30,24 @@ public:
 	void	resize(size_t n, char c = '\0');
 	void	clear();
 	void	swap(String &str);
-	int		substr(const String &str, size_t n, size_t len) const;// different
+	int		substr(const String &str, size_t n, size_t len) const;
 	int		substr(const char *str, size_t n, size_t len) const;
-	// string	&insert(size_t pos, const String &str);
-	// string	&insert(size_t pos, char c);
+	String	&insert(size_t pos, const String &str);
+	String	&insert(size_t pos, const char *str);
+	String	&insert(size_t pos, const String &str, size_t subpos, size_t sublen);
+	String	&insert(size_t pos, const char *str, size_t subpos, size_t sublen);
+
+	String	&operator=(const String &rhs);
+	String	operator+(const String &rhs) const;
+	String	operator+(const char *rhs) const;
+	String	&operator+=(const String &rhs);
+	String	&operator+=(const char *rhs);
+	bool	operator==(const String &b) const;
+	bool	operator!=(const String &b) const;
+
 
 };
 
-ostream &operator<<(ostream &out, String const &rhs);
+String		operator+(const char *lhs, const String &rhs);
+ostream		&operator<<(ostream &out, const String &rhs);
+istream		&operator>>(istream &in, String &rhs);
