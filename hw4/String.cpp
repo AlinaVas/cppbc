@@ -13,7 +13,11 @@ String::String(const String &str) : str(new char[str.length() + 1]), size(str.le
 
 String::String(const char *str) : size(strlen(str)) {
 
-	this->str = (str) ? strdup(str) : nullptr;
+	this->str = new char[size + 1];
+	if (!str || !size)
+		*this->str = '\0';
+	else
+		strcpy(this->str, str);
 }
 
 String::String(size_t n, char c) : str(new char[n + 1]), size(n) {
