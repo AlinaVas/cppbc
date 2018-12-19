@@ -6,18 +6,18 @@ using namespace std;
 
 String::String() : str(new char[1]), size(0) {}
 
-String::String(const String &str) : str(new char[str.length() + 1]), size(str.length()) {
+String::String(const String &src) : str(new char[src.length() + 1]), size(src.length()) {
 
-	this->str = strcpy(this->str, str.c_str());
+	str = strcpy(str, src.c_str());
 }
 
-String::String(const char *str) : size(strlen(str)) {
+String::String(const char *src) : size(strlen(src)) {
 
-	this->str = new char[size + 1];
-	if (!str || !size)
-		*this->str = '\0';
+	str = new char[size + 1];
+	if (!src || !size)
+		*str = '\0';
 	else
-		strcpy(this->str, str);
+		strcpy(str, src);
 }
 
 String::String(size_t n, char c) : str(new char[n + 1]), size(n) {
@@ -37,42 +37,42 @@ char*
 String::c_str() const { return str; }
 
 String&
-String::append(const String &str) {
+String::append(const String &src) {
 
-	size += str.length();
+	size += src.length();
 	
 	char *newStr = new char[size + 1];
-	strcpy(newStr, this->str);
-	strcat(newStr, str.c_str());
-	delete[] this->str;
-	this->str = newStr;
+	strcpy(newStr, str);
+	strcat(newStr, src.c_str());
+	delete[] str;
+	str = newStr;
 
 	return *this;
 }
 
 String&
-String::append(const char *str) {
+String::append(const char *src) {
 
-	size += strlen(str);
+	size += strlen(src);
 	char *newStr = new char[size + 1];
-	strcpy(newStr, this->str);
-	strcat(newStr, str);
-	delete[] this->str;
-	this->str = newStr;
+	strcpy(newStr, str);
+	strcat(newStr, src);
+	delete[] str;
+	str = newStr;
 
 	return *this;
 }
 
 int
-String::compare(const String &str) const {
+String::compare(const String &src) const {
 
-	return strcmp(this->str, str.c_str());
+	return strcmp(str, src.c_str());
 }
 
 int
-String::compare(const char *str) const {
+String::compare(const char *src) const {
 
-	return strcmp(this->str, str);
+	return strcmp(str, src);
 }
 
 void
@@ -87,8 +87,8 @@ String::resize(size_t n, char c /*= '\0'*/) {
 	}
 	newStr[n] = '\0';
 
-	delete[] this->str;
-	this->str = newStr;
+	delete[] str;
+	str = newStr;
 
 	size = n;
 }
@@ -103,15 +103,15 @@ String::clear() {
 }
 
 void
-String::swap(String &str) {
+String::swap(String &src) {
 
-	char *tmpStr = this->str;
-	this->str = str.str;
-	str.str = tmpStr;
+	char *tmpStr = str;
+	str = src.str;
+	src.str = tmpStr;
 
-	size_t tmpSize = this->size;
-	this->size = str.size;
-	str.size = tmpSize;
+	size_t tmpSize = size;
+	size = src.size;
+	src.size = tmpSize;
 }
 
 int
@@ -151,82 +151,82 @@ String::substr(const char *s, size_t n, size_t len) const {
 }
 
 String&
-String::insert(size_t pos, const String &str) {
+String::insert(size_t pos, const String &src) {
 
-	if (pos > this->size)
+	if (pos > size)
 		throw std::out_of_range("pos value is greater than the size of a String");
-	char *newStr = new char[this->size + str.size + 1];
-	strncpy(newStr, this->str, pos);
-	strcat(newStr, str.str);
-	strcpy(&newStr[pos + str.size], &this->str[pos]);
+	char *newStr = new char[size + src.size + 1];
+	strncpy(newStr, str, pos);
+	strcat(newStr, src.str);
+	strcpy(&newStr[pos + src.size], &str[pos]);
 
-	delete[] this->str;
-	this->str = newStr;
-	this->size += str.size;
+	delete[] str;
+	str = newStr;
+	size += src.size;
 	return *this;
 }
 
 String&
-String::insert(size_t pos, const char *str) {
+String::insert(size_t pos, const char *src) {
 
-	if (pos > this->size)
+	if (pos > size)
 		throw std::out_of_range("pos value is greater than the size of a String");
-	char *newStr = new char[this->size + strlen(str) + 1];
-	strncpy(newStr, this->str, pos);
-	strcat(newStr, str);
-	strcpy(&newStr[pos + strlen(str)], &this->str[pos]);
+	char *newStr = new char[size + strlen(src) + 1];
+	strncpy(newStr, str, pos);
+	strcat(newStr, src);
+	strcpy(&newStr[pos + strlen(src)], &str[pos]);
 
-	delete[] this->str;
-	this->str = newStr;
-	this->size += strlen(str);
+	delete[] str;
+	str = newStr;
+	size += strlen(src);
 	return *this;
 }
 
 String&
-String::insert(size_t pos, const String &str, size_t subpos, size_t sublen) {
+String::insert(size_t pos, const String &src, size_t subpos, size_t sublen) {
 
-	if (pos > this->size)
+	if (pos > size)
 		throw std::out_of_range("pos value is greater than the size of a String");
-	if (subpos > str.size)
+	if (subpos > src.size)
 		throw std::out_of_range("subpos value is greater than the size of str");
 
 	char *subStr = new char[sublen + 1];
-	strncpy(subStr, &str.str[subpos], sublen);
+	strncpy(subStr, &src.str[subpos], sublen);
 	subStr[sublen] = '\0';
 	
-	char *newStr = new char[this->size + sublen + 1];
-	strncpy(newStr, this->str, pos);
+	char *newStr = new char[size + sublen + 1];
+	strncpy(newStr, str, pos);
 	strcat(newStr, subStr);
-	strcpy(&newStr[pos + sublen], &this->str[pos]);
+	strcpy(&newStr[pos + sublen], &str[pos]);
 
 	delete[] subStr;
-	delete[] this->str;
-	this->str = newStr;
-	this->size += sublen;
+	delete[] str;
+	str = newStr;
+	size += sublen;
 	return *this;
 }
 
 String&
-String::insert(size_t pos, const char *str, size_t subpos, size_t sublen) {
+String::insert(size_t pos, const char *src, size_t subpos, size_t sublen) {
 
-	if (pos > this->size)
+	if (pos > size)
 		throw std::out_of_range("pos value is greater than the size of a String");
-	if (subpos > strlen(str))
+	if (subpos > strlen(src))
 		throw std::out_of_range("subpos value is greater than the size of str");
 
 	char *subStr = new char[sublen + 1];
-	strncpy(subStr, &str[subpos], sublen);
+	strncpy(subStr, &src[subpos], sublen);
 	subStr[sublen] = '\0';
 	
-	char *newStr = new char[this->size + sublen + 1];
-	strncpy(newStr, this->str, pos);
+	char *newStr = new char[size + sublen + 1];
+	strncpy(newStr, str, pos);
 	strcat(newStr, subStr);
-	strcpy(&newStr[pos + sublen], &this->str[pos]);
+	strcpy(&newStr[pos + sublen], &str[pos]);
 
 	delete[] subStr;
-	delete[] this->str;
-	this->str = newStr;
-	this->size += sublen;
+	delete[] str;
+	str = newStr;
+	size += sublen;
 	return *this;
 }
 
